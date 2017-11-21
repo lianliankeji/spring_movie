@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lxg.springboot.mapper.PurchaseMapper">
+	
+	<select id="querybuy" parameterType="com.lxg.springboot.model.Purchase" resultType="int">
+		select count(id) from purchase where id=#{id} and openid=#{openid};
+	</select>
+		
+	<select id="save" parameterType="com.lxg.springboot.model.Purchase">
+		insert into purchase(id,openid)
+		values (#{id},#{openid})
+	</select>
+	
+</mapper>  

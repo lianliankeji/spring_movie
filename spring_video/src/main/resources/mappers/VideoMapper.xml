@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lxg.springboot.mapper.VideoMapper">
+
+	<insert id="save" parameterType="com.lxg.springboot.model.Video">
+		insert into video(id,name,frt,type,description,mark,url,episode,image,uploaduser,director,actor)
+		values (#{id},#{name},#{frt},#{type},#{description},#{mark},#{url},#{episode},#{image},#{uploaduser},#{director},#{actor})
+	</insert>
+		
+	<select id="queryone" parameterType="com.lxg.springboot.model.Video" resultType="com.lxg.springboot.model.Video">
+			select * from video where id=#{id}
+	</select>
+	
+	<select id="querymax" resultType="int">
+			select max(id) from video
+	</select>
+	
+	<select id="querypage" parameterType="com.lxg.springboot.model.Video" resultType="int">
+			select count(id) from video
+	</select>
+	
+	<select id="querypagead" parameterType="com.lxg.springboot.model.Video" resultType="int">
+			select count(id) from video where uploaduser = #{uploaduser}  
+	</select>
+		
+	<select id="query" parameterType="com.lxg.springboot.model.Video" resultType="com.lxg.springboot.model.Video">
+		select * from video
+		order by id desc
+		limit #{page},#{pagenum}
+	</select>	
+	
+	<select id="querybyad" parameterType="com.lxg.springboot.model.Video" resultType="com.lxg.springboot.model.Video">
+		select * from video where uploaduser = #{uploaduser}
+		order by id desc
+		limit #{page},#{pagenum}
+	</select>
+	
+</mapper>  
