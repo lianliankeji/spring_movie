@@ -22,6 +22,8 @@ import java.util.List;
 import com.lxg.springboot.model.Msg;
 import com.lxg.springboot.model.ResultUtil;
 import com.lxg.springboot.model.Video;
+import com.qcloud.vod.VodApi;
+import com.qcloud.vod.response.VodUploadCommitResponse;
 import com.lxg.springboot.mapper.VideoMapper;
 
 @Controller
@@ -60,10 +62,9 @@ public class FileController {
     	video.setDescription(description);
     	video.setActor(actor);
     	video.setDirector(director);
-    	video.setUploaduser(openid);
-    	video.setUrl(fileName);
+    	video.setUploaduser(openid);    	
     	System.out.println("file4");
-    	videoMapper.save(video);
+    	
     	System.out.println("file5");
         // 检测是否存在目录
         if (!dest.getParentFile().exists()) {
@@ -72,12 +73,25 @@ public class FileController {
         try {
         	System.out.println("file6");
             file.transferTo(dest);
+            try {
+                VodApi vodApi = new VodApi("AKIDd6KJcj1TxCAsKWR6VeXBZhdKlvpToDDz", "h9LL5appb7NN7dvymSvBD2e3GH1VifM4");
+                //设置签名过期时长
+                //VodApi vodApi = new VodApi("your secretId", "your secretKey", 24 * 3600);
+                VodUploadCommitResponse temp = vodApi.upload(filePath + fileName);  
+            	video.setUrl(temp.getVideo().getUrl());
+            	videoMapper.save(video);
+            } catch(Exception e) {
+                //打日志
+            	return ResultUtil.error("999999", "上传失败");
+            }
+            
             return ResultUtil.success(i); 
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
         return ResultUtil.error("999999", "上传失败");
     }
 

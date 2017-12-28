@@ -89,6 +89,35 @@ public class WxApiController {
         map.put("msg", "解密失败");
         return map;
     }
+    
+    @RequestMapping({"video/wx/decodePhone"})
+    public Map decodePhone(String encryptedData, String iv, String openid, String session_key)
+    {
+      Map map = new HashMap();
+      try
+      {
+        String result = AesCbcUtil.decrypt(encryptedData, session_key, iv, "UTF-8");
+        if ((result != null) && (result.length() > 0))
+        {
+          map.put("status", Integer.valueOf(1));
+          map.put("msg", "解密成功");
+          
+          JSONObject userInfoJSON = JSONObject.fromObject(result);
+          Map userInfo = new HashMap();
+          userInfo.put("phone", userInfoJSON.get("purePhoneNumber"));
+          map.put("ret", userInfo);
+          return map;
+        }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+        
+        map.put("status", Integer.valueOf(0));
+        map.put("msg", "解密失败");
+      }
+      return map;
+    }
 	
 	@RequestMapping("video/wx/getUnionID")
 	public String getUnionID(String code,String token) throws Exception {

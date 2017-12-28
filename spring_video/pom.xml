@@ -103,7 +103,14 @@
 	    <groupId>org.bouncycastle</groupId>
 	    <artifactId>bcprov-jdk15on</artifactId>
 	    <version>1.58</version>
-</dependency> 
+	</dependency> 
+	
+
+		<dependency>
+			<groupId>com.qcloud</groupId>
+			<artifactId>vod_api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
