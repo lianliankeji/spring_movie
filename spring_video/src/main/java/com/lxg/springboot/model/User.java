@@ -12,17 +12,31 @@ public class User extends BasicObject {
 
 	private String openid;
 
-	private String nickname;
+	private String vip;
 
-	private String sex;
+	private int frt;
 
-	private String age;
+	private String viptime;
 
-	private String phoneno;
+	private String last1id;
 	
-	private String address;
+	private int last1type;
 	
-	private String password;
+	private int last1ep;
+	
+	private String last2id;
+	
+	private int last2type;
+	
+	private int last2ep;
+	
+	private String last3id;
+	
+	private int last3type;
+	
+	private int last3ep;
+	
+	private int time;
 
 	public String getOpenid() {
 		return openid;
@@ -32,57 +46,108 @@ public class User extends BasicObject {
 		this.openid = openid;
 	}
 
-	public String getNickname() {
-		return nickname;
+	public String getVip() {
+		return vip;
 	}
 
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
+	public void setVip(String vip) {
+		this.vip = vip;
 	}
 
-	public String getSex() {
-		return sex;
+	public int getFrt() {
+		return frt;
 	}
 
-	public void setSex(String sex) {
-		this.sex = sex;
+	public void setFrt(int frt) {
+		this.frt = frt;
 	}
 
-	public String getAge() {
-		return age;
+	public String getViptime() {
+		return viptime;
 	}
 
-	public void setAge(String age) {
-		this.age = age;
+	public void setViptime(String viptime) {
+		this.viptime = viptime;
 	}
 
-	public String getPhoneno() {
-		return phoneno;
+	public String getLast1id() {
+		return last1id;
 	}
 
-	public void setPhoneno(String phoneno) {
-		this.phoneno = phoneno;
+	public void setLast1id(String last1id) {
+		this.last1id = last1id;
 	}
 
-	public String getAddress() {
-		return address;
+	public int getLast1type() {
+		return last1type;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setLast1type(int last1type) {
+		this.last1type = last1type;
 	}
 
-	@Override
-	public String toString() {
-		return "User [openid=" + openid + ", nickname=" + nickname + ", sex=" + sex + ", age=" + age + ", phoneno="
-				+ phoneno + ", address=" + address + "]";
+	public int getLast1ep() {
+		return last1ep;
 	}
 
-	public String getPassword() {
-		return password;
+	public void setLast1ep(int last1ep) {
+		this.last1ep = last1ep;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public String getLast2id() {
+		return last2id;
 	}
+
+	public void setLast2id(String last2id) {
+		this.last2id = last2id;
+	}
+
+	public int getLast2type() {
+		return last2type;
+	}
+
+	public void setLast2type(int last2type) {
+		this.last2type = last2type;
+	}
+
+	public int getLast2ep() {
+		return last2ep;
+	}
+
+	public void setLast2ep(int last2ep) {
+		this.last2ep = last2ep;
+	}
+
+	public String getLast3id() {
+		return last3id;
+	}
+
+	public void setLast3id(String last3id) {
+		this.last3id = last3id;
+	}
+
+	public int getLast3type() {
+		return last3type;
+	}
+
+	public void setLast3type(int last3type) {
+		this.last3type = last3type;
+	}
+
+	public int getLast3ep() {
+		return last3ep;
+	}
+
+	public void setLast3ep(int last3ep) {
+		this.last3ep = last3ep;
+	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+
 }

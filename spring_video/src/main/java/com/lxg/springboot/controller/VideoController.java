@@ -30,6 +30,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -98,13 +102,29 @@ public class VideoController extends BaseController {
     } 
     
     @RequestMapping("validate")
-    public Msg validate(Purchase purchase) {
+    public Msg validate(Purchase purchase) throws ParseException {
     	int i = purchaseMapper.querybuy(purchase);
     	if (i!=0){
     	return ResultUtil.success(1);
     	}
     	else{
-    	return ResultUtil.success(0);	
+    	User user = new User();
+    	user.setOpenid(purchase.getOpenid());
+    	int j = userMapper.count(user);
+    	if (j==0)
+    		return ResultUtil.success(0);	
+    	User userf = new User();
+    	userf = userMapper.query(user);
+    	String time=userf.getViptime();
+    	DateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+    	java.util.Date temptime=format.parse(time);  
+    	java.util.Date now = new Date();
+    	if(temptime.after(now)){
+    		return ResultUtil.success(1);
+    	}
+    	else{
+    		return ResultUtil.success(0);	
+    	}
     	}
     }
     

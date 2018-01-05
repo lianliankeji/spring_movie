@@ -98,7 +98,7 @@ public class WxPayController {
 	@Resource
     private SkuMapper skuMapper;
 	
-    @RequestMapping("wxpay/prepay")
+    @RequestMapping("video/prepay")
     public String prepay(Order Order) throws Exception {	
 		OrderInfo order = new OrderInfo();
 		String orderNo = RandomStringGenerator.getRandomStringByLength(32);
@@ -107,35 +107,6 @@ public class WxPayController {
 		DateFormat format=new SimpleDateFormat("yyyyMMddHHmmss"); 
 		String time=format.format(date);
 		Order.setTime(time);
-		List<Cart> cart;
-		Cart tempA = new Cart();
-		tempA.setOpenid(Order.getOpenid());
-		tempA.setStoreid(Order.getStoreid());
-		cart = cartMapper.querybypage(tempA);
-		for(int i = 0 ; i < cart.size() ; i++) {			
-			OrderGood temp = new OrderGood();
-			Good good = new Good();
-    		good.setCode(cart.get(i).getCode());
-        	good.setStoreid(cart.get(i).getStoreid());
-        	Good returngood = new Good();
-        	returngood=goodMapper.querybyCode(good);
-        	if(returngood.getAmount()<cart.get(i).getAmount()){
-        		JSONObject jsonA = new JSONObject();
-        		jsonA.put("returncode", "01");
-        		jsonA.put("returnmsg", returngood.getName()+"库存不足");
-        		return jsonA.toJSONString();
-        	}
-        	else{
-        		temp.setAmount(cart.get(i).getAmount());
-        		temp.setCode(cart.get(i).getCode());
-        		temp.setOrderNo(orderNo);
-        		temp.setStoreid(Order.getStoreid());
-        		temp.setSpecifi(returngood.getSpecifi());
-        		temp.setPrice(returngood.getPrice());
-        		temp.setName(returngood.getName());
-        		OrderMapper.savegood(temp);	
-        	}	 
-        }	
 		Order.setOrderNo(orderNo);
 		Order.setTime(time);
 		Order.setState(2);
@@ -149,7 +120,7 @@ public class WxPayController {
 		order.setOut_trade_no(orderNo);
 		order.setTotal_fee(totalfee);
 		order.setSpbill_create_ip("123.57.218.54");
-		order.setNotify_url("https://store.lianlianchains.com/wxpay/result");
+		order.setNotify_url("https://store.lianlianchains.com/video/wxpay/result");
 		order.setTrade_type("JSAPI");
 		order.setOpenid(Order.getOpenid());
 		order.setSign_type("MD5");
@@ -174,7 +145,7 @@ public class WxPayController {
 		return json.toJSONString();
     }
     
-    @RequestMapping("wxpay/sign")
+    @RequestMapping("video/wxpay/sign")
     public String sign(String repay_id) throws Exception {
 
 		SignInfo signInfo = new SignInfo();
@@ -198,7 +169,7 @@ public class WxPayController {
 		
     }
 
-    @RequestMapping("wxpay/result")
+    @RequestMapping("video/wxpay/result")
     public void result(HttpServletRequest request,HttpServletResponse response) throws IOException {  	
     	System.out.println("微信支付回调");
         InputStream inStream = request.getInputStream();
@@ -229,89 +200,11 @@ public class WxPayController {
         tempOrder = orderMapper.querybyno(Order);
         if(tempOrder.getState()!=1){        	
         if (map.get("result_code").equals("SUCCESS")) {      	
-        	Order.setState(1);
-        	List<OrderGood> temp;
-        	temp=orderMapper.queryGood(Order);
-        	for(int i=0 ;i<temp.size();i++){
-        		Good good = new Good();
-        		good.setCode(temp.get(i).getCode());
-            	good.setStoreid(temp.get(i).getStoreid());
-            	Good returngood = new Good();
-            	returngood=goodMapper.querybyCode(good);
-            	System.out.println("减库存"+ returngood.getAmount()+temp.get(i).getAmount());
-            	returngood.setAmount(returngood.getAmount()-temp.get(i).getAmount());
-            	goodMapper.update(returngood);		
+        	Order.setState(1);     		
     	}
-        	orderMapper.update(Order);     
-        	//企业付款
-        	int fee = (int) (tempOrder.getFee()*100); 
-        	System.out.println("企业支付结果：" + fee);
-        	String feeS = Integer.toString(fee);
-        	String paternerKey="79m1jyaofjonvahln1wnoq606rvbk2gi";
-    		Map<String, String> parm = new HashMap<String, String>();
-    		String orderNo = RandomStringGenerator.getRandomStringByLength(32);
-    		Order OrderPay = new Order();
-    		OrderPay.setOrderNo(orderNo);
-    		OrderPay.setFee(tempOrder.getFee());
-    		String storeid=tempOrder.getMch_id();
-    		User tempuser = new User();
-    		tempuser.setStoreid(storeid);
-    		User Boss=userMapper.querybossbyid(tempuser);
-    		try{		
-    		parm.put("mch_appid", appid); //公众账号appid
-    		parm.put("mchid", "1472139902"); //商户号
-    		parm.put("nonce_str", RandomStringGenerator.getRandomStringByLength(32)); //随机字符串
-    		parm.put("partner_trade_no",orderNo); //商户订单号
-    		parm.put("openid", Boss.getOpenid()); //用户openid	
-    		parm.put("check_name", "FORCE_CHECK"); //校验用户姓名选项 OPTION_CHECK
-    		parm.put("re_user_name", Boss.getNickname()); //check_name设置为FORCE_CHECK或OPTION_CHECK，则必填
-    		parm.put("amount", feeS); //转账金额
-    		parm.put("desc", "快点支付"); //企业付款描述信息		
-    		parm.put("spbill_create_ip", InetAddress.getLocalHost().getHostAddress());
-    		parm.put("sign", PayUtil.getSign(parm, paternerKey));
-    		OrderPay.setMch_id("1472139902");
-    		Date date=new Date(); 
-    		DateFormat format=new SimpleDateFormat("yyyyMMddHHmmss"); 
-    		String time=format.format(date);
-    		OrderPay.setOpenid(Boss.getOpenid());
-    		OrderPay.setTime(time);
-    		OrderPay.setState(2);
-    		withDrawMapper.save(OrderPay);
-    		
-    		} catch (UnsupportedEncodingException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		} catch (UnknownHostException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}	
-    		if(userMapper.bosspay()== 0){
-    		HttpResult result2 = HttpUtils.posts("https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers", XmlUtil.xmlFormat(parm, false));
-    			
-
-    		XStream xStream = new XStream();
-    		xStream.alias("xml", PayReturnInfo.class); 
-
-    		PayReturnInfo returnInfo = (PayReturnInfo)xStream.fromXML(result2.getBody());
-    		JSONObject json = new JSONObject();
-    		json.put("return_code", returnInfo.getReturn_code());
-    		json.put("return_msg", returnInfo.getReturn_msg());
-    		System.out.println("企业支付结果：" + returnInfo.getReturn_msg());
-    		System.out.println("企业支付结果：" + returnInfo.getErr_code()+returnInfo.getErr_code_des()+returnInfo.getResult_code());
-    		if (returnInfo.getResult_code().equals("SUCCESS")) {
-    			OrderPay.setState(1);		
-            }
-            else{
-            	OrderPay.setState(0);	
-            }               
-    		withDrawMapper.update(OrderPay);  	
-    		}
+        	orderMapper.update(Order); 
         }
-        else{
-        	Order.setState(0);
-        	orderMapper.update(Order);     
-        }                  
-        }
+        	
     }
     
     @RequestMapping("wxpay/bosspay")
@@ -355,7 +248,7 @@ public class WxPayController {
     		parm.put("partner_trade_no",orderNo); //商户订单号
     		parm.put("openid", temp.getOpenid()); //用户openid	
     		parm.put("check_name", "FORCE_CHECK"); //校验用户姓名选项 OPTION_CHECK
-    		parm.put("re_user_name", user.get(i).getNickname()); //check_name设置为FORCE_CHECK或OPTION_CHECK，则必填
+    		parm.put("re_user_name", "name"); //check_name设置为FORCE_CHECK或OPTION_CHECK，则必填
     		parm.put("amount", feeS); //转账金额
     		parm.put("desc", "快点支付"); //企业付款描述信息		
     		parm.put("spbill_create_ip", InetAddress.getLocalHost().getHostAddress());
